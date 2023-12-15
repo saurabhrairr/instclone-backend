@@ -8,11 +8,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
-//midaleware
+//midaleware app.js
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-
+wppew=wpe
 
 const crypto = require("crypto");
 
