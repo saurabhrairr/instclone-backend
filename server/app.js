@@ -6,19 +6,16 @@ const UserModel = require("./model/userschema");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-require('dotenv').config();
-
-//midaleware app.js
-app.use(express.json({ limit: "30mb", extended: true }));
-app.use(express.urlencoded({ extended: false }));
-app.use(cors());
+require("dotenv").config();
 
 const crypto = require("crypto");
 
 const secretKey = crypto.randomBytes(32).toString("hex");
 
-
-
+//midaleware app.js
+app.use(express.json({ limit: "30mb", extended: true }));
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 app.listen(process.env.PORT || 3082, (err) => {
   if (!err) {
@@ -28,13 +25,17 @@ app.listen(process.env.PORT || 3082, (err) => {
   }
 });
 
-mongoose.connect(process.env.db, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
-  if (!err) {
-    console.log("connected to Database");
-  } else {
-    console.log(err);
+mongoose.connect(
+  process.env.db,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (err) => {
+    if (!err) {
+      console.log("connected to Database");
+    } else {
+      console.log(err);
+    }
   }
-});
+);
 
 // Signup Route
 // Signup Route
@@ -44,7 +45,9 @@ app.post("/signup", async (req, res) => {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists" });
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,16 +65,15 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-
-
-
 app.post("/checkUser", async (req, res) => {
   try {
     const { email } = req.body;
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists" });
+      return res
+        .status(400)
+        .json({ error: "User with this email already exists" });
     }
 
     res.status(200).json({ isUserRegistered: false });
@@ -80,8 +82,6 @@ app.post("/checkUser", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.post("/login", async (req, res) => {
   try {
@@ -102,13 +102,9 @@ app.post("/login", async (req, res) => {
     }
 
     // Create a JWT token using the constant secret key
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      secretKey,
-      {
-        expiresIn: "1h", // Token expiration time
-      }
-    );
+    const token = jwt.sign({ userId: user._id, email: user.email }, secretKey, {
+      expiresIn: "1h", // Token expiration time
+    });
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
@@ -116,23 +112,20 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
-
-
 const authenticateToken = (req, res, next) => {
-  const token = req.header('Authorization');
+  const token = req.header("Authorization");
 
-  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
 
   jwt.verify(token, secretKey, (err, user) => {
     if (err) {
-      console.error('JWT verification error:', err);
-      return res.status(403).json({ error: 'Forbidden' });
+      console.error("JWT verification error:", err);
+      return res.status(403).json({ error: "Forbidden" });
     }
     req.user = user;
     next();
   });
-}
+};
 
 // Get all users Route
 app.get("/users", async (req, res) => {
@@ -145,8 +138,6 @@ app.get("/users", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 app.post("/post", (req, res) => {
   postmodel
@@ -166,7 +157,6 @@ app.post("/post", (req, res) => {
       res.status(400).send(err.message);
     });
 });
-
 
 app.put("/updatePost/:postId", async (req, res) => {
   try {
@@ -197,13 +187,6 @@ app.put("/updatePost/:postId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
 app.delete("/deletePost/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
@@ -231,9 +214,6 @@ app.get("/post", (req, res) => {
     });
 });
 
-
-
-
 app.post("/addComment/:postId", authenticateToken, async (req, res) => {
   try {
     const postId = req.params.postId;
@@ -251,13 +231,10 @@ app.post("/addComment/:postId", authenticateToken, async (req, res) => {
 
     res.json(post);
   } catch (error) {
-    console.error('Error adding comment', error);
+    console.error("Error adding comment", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
 
 app.post("/likePost/:postId", authenticateToken, async (req, res) => {
   try {
@@ -271,7 +248,9 @@ app.post("/likePost/:postId", authenticateToken, async (req, res) => {
 
     // Check if the user has already liked the post
     if (post.likes.includes(email)) {
-      return res.status(400).json({ error: "User has already liked this post" });
+      return res
+        .status(400)
+        .json({ error: "User has already liked this post" });
     }
 
     // Add like to the post with the logged-in user's name
@@ -283,4 +262,3 @@ app.post("/likePost/:postId", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
