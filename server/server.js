@@ -12,7 +12,6 @@ require('dotenv').config();
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-wppew=wpe
 
 const crypto = require("crypto");
 
