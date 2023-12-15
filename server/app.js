@@ -10,32 +10,24 @@ require("dotenv").config();
 
 const crypto = require("crypto");
 
-const secretKey = crypto.randomBytes(32).toString("hex");
+// Use a static secret key for JWT signing
+const secretKey = process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
 
-//midaleware app.js
+// Middleware
+app.use(cors());
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
 
-app.listen(process.env.PORT || 3082, (err) => {
-  if (!err) {
-    console.log("servre connect 3082 port");
-  } else {
-    console.log(err);
-  }
+// MongoDB Connection
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connected to Database"))
+  .catch(error => console.error("MongoDB Connection Error:", error));
+
+// Server Setup
+const PORT = process.env.PORT || 3082;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-mongoose.connect(
-  process.env.db,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err) => {
-    if (!err) {
-      console.log("connected to Database");
-    } else {
-      console.log(err);
-    }
-  }
-);
 
 // Signup Route
 // Signup Route
