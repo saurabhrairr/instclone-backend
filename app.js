@@ -9,9 +9,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const crypto = require("crypto");
-
-// Use a static secret key for JWT signing
-const secretKey = process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
+const generateSecretKey = () => {
+       // Use any suitable method to generate a key, here we use crypto.randomBytes
+       return crypto.randomBytes(32).toString('hex');
+     };
+     
+     // Generate the secret key
+     const secretKey = generateSecretKey();
 
 // Middleware
 app.use(cors());
