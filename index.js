@@ -154,7 +154,7 @@ app.post("/post", (req, res) => {
       res.status(400).send(err.message);
     });
 });
-
+// delete
 app.put("/updatePost/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
