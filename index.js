@@ -55,6 +55,7 @@ app.post("/signup", async (req, res) => {
     const savedUser = await UserModel.create(newUser);
 
     res.status(201).json({ message: "Signup successful", user: savedUser });
+    console.log("dddd");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
