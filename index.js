@@ -184,12 +184,14 @@ app.put("/updatePost/:postId", async (req, res) => {
   }
 });
 
+
+
 app.delete("/deletePost/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
 
     // Find the post by ID and remove it
-    const deletedPost = await postmodel.findByIdAndRemove(postId);
+    const deletedPost = await postmodel.findOneAndDelete({ _id: postId });
 
     if (!deletedPost) {
       return res.status(404).json({ error: "Post not found" });
@@ -200,6 +202,11 @@ app.delete("/deletePost/:postId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
+
 app.get("/post", (req, res) => {
   postmodel
     .find()
@@ -210,6 +217,9 @@ app.get("/post", (req, res) => {
       res.status(400).send(err.message);
     });
 });
+
+
+
 
 app.post("/addComment/:postId", authenticateToken, async (req, res) => {
   try {
@@ -232,6 +242,28 @@ app.post("/addComment/:postId", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+app.get("/getComments/:postId", async (req, res) => {
+  try {
+    const postId = req.params.postId;
+
+    const post = await postmodel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const comments = post.comments;
+
+    res.json({ comments });
+  } catch (error) {
+    console.error("Error getting comments", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.post("/likePost/:postId", authenticateToken, async (req, res) => {
   try {
